@@ -40,6 +40,9 @@ export class GenericNode {
   evaluated = false;
 
   @observable
+  regenerated = 0;
+
+  @observable
   engine!: any;
 
   @computed
@@ -90,6 +93,11 @@ export class GenericNode {
   }
 
   @action
+  deleteSelf() {
+    this.engine.removeNode(this);
+  }
+
+  @action
   addOutputSocket(name: string, getterOrSocket: (() => unknown) | Socket) {
     if (getterOrSocket instanceof Socket) {
       this.outputSockets[name] = getterOrSocket;
@@ -100,6 +108,7 @@ export class GenericNode {
         previewAvailable: true,
       });
     }
+    this.outputSockets[name].setNodeAndName(this, name);
   }
 
   @action
@@ -115,12 +124,23 @@ export class GenericNode {
         transform: transformOrSocket,
       });
     }
+    this.inputSockets[name].setNodeAndName(this, name);
   }
 
   @action
   move(newX: number, newY: number) {
     this.x = newX;
     this.y = newY;
+  }
+
+  @action
+  disconnectAll() {
+    Object.values(this.inputSockets).forEach((socket) => {
+      socket.disconnectAll();
+    });
+    Object.values(this.outputSockets).forEach((socket) => {
+      socket.disconnectAll();
+    });
   }
 
   startDragging = (e: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {

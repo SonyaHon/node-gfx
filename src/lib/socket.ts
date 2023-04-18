@@ -22,11 +22,17 @@ export class Socket {
   @observable.deep
   fn: (...args: any) => unknown;
 
-  @observable
+  @observable.deep
   htmlEl: Element | null = null;
 
   @observable
   ready = false;
+
+  @observable
+  node: any = null;
+
+  @observable
+  name = "";
 
   constructor(options: ISocketOptions) {
     this.mode = options.mode;
@@ -44,6 +50,12 @@ export class Socket {
         : false;
 
     makeObservable(this);
+  }
+
+  @action
+  setNodeAndName(node: any, name: string) {
+    this.node = node;
+    this.name = name;
   }
 
   @computed
@@ -72,7 +84,20 @@ export class Socket {
   }
 
   @action
-  disconnectAll() {}
+  disconnect(other: Socket) {
+    const idx = this.connections.findIndex((s) => s === other);
+    if (idx >= 0) {
+      this.connections.splice(idx, 1);
+    }
+  }
+
+  @action
+  disconnectAll() {
+    this.connections.forEach((socket) => {
+      socket.disconnect(this);
+    });
+    this.connections = [];
+  }
 
   @computed
   get clientPos() {

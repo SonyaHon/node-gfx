@@ -21,7 +21,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "experimentalDecorators": true,
-    "emitDecoratormetadata": true
+    "emitDecoratormetadata": true,
+    "useDefineForClassFields": true
   },
   "include": [
     "src"

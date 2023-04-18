@@ -9,7 +9,6 @@ import { ConnectorLine } from "./connection-line";
 import { GenericNode } from "./generic-node";
 import { Socket, SocketMode } from "./socket";
 import { v4 as uuid } from "uuid";
-import { NODES } from "../core";
 
 interface Loc {
   x: number;
@@ -20,7 +19,10 @@ class Connection {
   constructor(
     public id: string,
     public addedPoints: Loc[],
-    public getEnds: () => Loc[]
+    public getEnds: () => Loc[],
+
+    public output: { socketName: string; node: GenericNode },
+    public input: { socketName: string; node: GenericNode }
   ) {}
 
   points() {
@@ -81,6 +83,20 @@ export class Engine {
   }
 
   @action
+  removeNode(node: GenericNode) {
+    const nodeIndex = this.nodes.findIndex((n) => n === node);
+    if (nodeIndex >= 0) {
+      node.disconnectAll();
+      this.connections = this.connections.filter((connection) => {
+        return !(
+          connection.input.node === node || connection.output.node === node
+        );
+      });
+      this.nodes.splice(nodeIndex, 1);
+    }
+  }
+
+  @action
   async step() {
     const nodesToRun = this.nodes.filter((node) => {
       return node.allInputsEvaluated && !node.evaluated;
@@ -113,7 +129,13 @@ export class Engine {
     socketA.connect(socketB);
 
     this.connections.push(
-      new Connection(uuid(), [], () => [socketA.clientPos, socketB.clientPos])
+      new Connection(
+        uuid(),
+        [],
+        () => [socketA.clientPos, socketB.clientPos],
+        { socketName: outputName, node: nodeA },
+        { socketName: inputName, node: nodeB }
+      )
     );
   }
 
@@ -169,14 +191,32 @@ class OngoingConnection {
 
   @action
   tryConnect(target: any) {
-    console.log(this, target.socket);
     if (target.socket) {
       this.startingSocket.connect(target.socket);
+
+      const isSelfInput = this.startingSocket.mode === SocketMode.Input;
+      const input = {
+        socketName: isSelfInput ? target.socket.name : this.startingSocket.name,
+        node: isSelfInput ? target.socket.node : this.startingSocket.node,
+      };
+      const output = {
+        socketName: isSelfInput ? this.startingSocket.name : target.socket.name,
+        node: isSelfInput ? this.startingSocket.node : target.socket.node,
+      };
+
       this.engine.connections.push(
-        new Connection(uuid(), [], () => {
-          return [this.startingSocket.clientPos, target.socket.clientPos];
-        })
+        new Connection(
+          uuid(),
+          [],
+          () => {
+            return [this.startingSocket.clientPos, target.socket.clientPos];
+          },
+          input,
+          output
+        )
       );
+    } else {
+      console.log("create a new node a connect to it's available input");
     }
 
     setTimeout(() => {
