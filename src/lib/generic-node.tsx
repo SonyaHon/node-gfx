@@ -37,9 +37,6 @@ export class GenericNode {
   inputSockets: Record<string, Socket> = {};
 
   @observable
-  colorClass = "#ffffff";
-
-  @observable
   evaluated = false;
 
   @observable
@@ -151,11 +148,6 @@ export class GenericNode {
     );
     window.addEventListener("mousemove", clb);
   };
-
-  @computed
-  get color() {
-    return this.colorClass;
-  }
 
   @computed
   get reactComponent() {
