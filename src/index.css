@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+html {
+    font-size: 12px;
+}
+
+.p-fieldset-legend {
+    padding: 0 .5rem !important;
+    margin: 0 2px !important;
+}
+
+.p-checkbox, .p-checkbox-box {
+    width: 1rem !important;
+    height: 1rem !important;
+}
+
+.p-checkbox-box {
+    border-width: 1px !important;
+}
+
+.p-checkbox-icon::before {
+    display: none;
+}
