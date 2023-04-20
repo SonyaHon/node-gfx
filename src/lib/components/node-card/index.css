@@ -1,0 +1,12 @@
+.gfx-fieldset {
+
+}
+
+.gfx-fieldset .p-fieldset-legend {
+    padding: 0 .5rem !important;
+    margin: 0 2px !important;
+}
+
+.gfx-fieldset .p-fieldset-content {
+    padding: 0.5rem !important;
+}

@@ -1,10 +1,9 @@
-import { observer } from "mobx-react-lite";
-import { Editor } from "../editor";
+import { NodeGFXEditor } from "../lib/components/editor";
 
-export const App = observer(() => {
+export const App = () => {
   return (
     <div>
-      <Editor />
+      <NodeGFXEditor />
     </div>
   );
-});
+};

@@ -1,9 +1,7 @@
-import { observer } from "mobx-react-lite";
 import React from "react";
-
-export interface IConnectorLineProps {
-  points: { x: number; y: number }[];
-}
+import { observer } from "mobx-react-lite";
+import { getEditor } from "../../utils";
+// import { Point } from "../../point";
 
 const buildLine = ([a, b]: { x: number; y: number }[]) => {
   const lx = Math.abs(a.x - b.x);
@@ -20,25 +18,31 @@ const buildLine = ([a, b]: { x: number; y: number }[]) => {
   );
 };
 
-export const ConnectorLine: React.FunctionComponent<IConnectorLineProps> =
-  observer(({ points }) => {
+export interface IConnectionComponentProps {
+  points: { x: number; y: number }[];
+  ongoing?: boolean;
+}
+
+export const ConnectionComponent: React.FC<IConnectionComponentProps> =
+  observer(({ points, ongoing }) => {
     const pointsSorted = points.sort((a, b) => a.x - b.x);
     const pairs = [];
     for (let i = 0; i < pointsSorted.length - 1; i++) {
       pairs.push([pointsSorted[i], pointsSorted[i + 1]]);
     }
-
     return (
       <div
+        className="absolute"
         style={{
           top: 0,
           left: 0,
-          width: window.innerWidth,
-          height: window.innerHeight,
+          width: getEditor().canvasWidth,
+          height: getEditor().canvasHeight,
         }}
-        className="absolute"
       >
-        <svg viewBox={`0 0 ${window.innerWidth} ${window.innerHeight}`}>
+        <svg
+          viewBox={`0 0 ${getEditor().canvasWidth} ${getEditor().canvasHeight}`}
+        >
           {pairs.map((pair, index) => {
             return (
               <path
@@ -46,7 +50,7 @@ export const ConnectorLine: React.FunctionComponent<IConnectorLineProps> =
                 d={buildLine(pair)}
                 style={{
                   fill: "none",
-                  stroke: "var(--surface-border)",
+                  stroke: ongoing ? "white" : "var(--surface-border)",
                   strokeWidth: 4,
                 }}
               />
