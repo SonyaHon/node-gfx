@@ -198,4 +198,13 @@ export class NodeGFXEngine extends EventEmitter {
 
     runInAction(() => this.touchNodes());
   }
+
+  @action
+  destroyNode(node: NodeGFX) {
+    const index = this.nodes.findIndex((n) => n === node);
+    if (index >= 0) {
+      node.disconnectAll();
+      this.nodes.splice(index, 1);
+    }
+  }
 }
