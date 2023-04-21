@@ -209,4 +209,15 @@ export class NodeGFX extends EventEmitter {
     });
     return node;
   }
+
+  @action
+  destroy() {
+    getEngine().destroyNode(this);
+  }
+
+  @action
+  disconnectAll() {
+    this.inputSockets.forEach((socket) => socket.disconnect());
+    this.outputSockets.forEach((socket) => socket.disconnect());
+  }
 }

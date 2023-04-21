@@ -1,0 +1,18 @@
+.gfx-checkbox {
+    width: 1rem !important;
+    height: 1rem !important;
+    margin-top: 0 !important;
+}
+
+.gfx-checkbox > div {
+    width: 1rem !important;
+    height: 1rem !important;
+}
+
+.gfx-checkbox ::before {
+    display: none;
+}
+
+.gfx-text {
+    text-align: right !important;
+}
