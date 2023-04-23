@@ -44,6 +44,11 @@ export class NodeGFX extends EventEmitter {
     getEngine().touchNodes();
   }
 
+  @action
+  setTitle(title: string) {
+    this.title = title;
+  }
+
   @computed
   get pivot() {
     return {
@@ -94,6 +99,7 @@ export class NodeGFX extends EventEmitter {
     const target =
       socket.mode === SocketMode.Input ? this.inputSockets : this.outputSockets;
     socket.setRef(this);
+    socket.on("connection", (...args) => this.emit("connection", ...args));
     target.push(socket);
   }
 

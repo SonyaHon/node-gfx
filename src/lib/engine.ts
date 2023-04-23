@@ -10,9 +10,10 @@ import {
 import { DataContainer } from "./container";
 import { getEditor, getNodeMetadata } from "./utils";
 import { MenuItem } from "primereact/menuitem";
-// import { Point } from "./point";
+
 import { NodeGFX } from "./node";
 import type { NodeGFXSocket } from "./socket";
+
 // eslint-disable-next-line no-duplicate-imports
 import { ConnectionStatus, SocketMode } from "./socket";
 

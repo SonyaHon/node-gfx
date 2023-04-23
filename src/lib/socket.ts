@@ -11,6 +11,11 @@ import { NodeGFXException } from "./error";
 import { v4 as uuid } from "uuid";
 import { getEditor } from "./utils";
 
+export interface IConnectionEvent {
+  input: NodeGFXSocket;
+  output: NodeGFXSocket;
+}
+
 export enum SocketMode {
   Input = "input",
   Output = "output",
@@ -63,8 +68,7 @@ export class NodeGFXSocket extends EventEmitter {
   pivot: Element | null = null;
 
   static createInput(name: string, opts: ICreateInputSocketOpts = {}) {
-    const sock = new NodeGFXSocket(SocketMode.Input, name, opts.datatype);
-    return sock;
+    return new NodeGFXSocket(SocketMode.Input, name, opts.datatype);
   }
 
   static createOutput(
@@ -121,6 +125,10 @@ export class NodeGFXSocket extends EventEmitter {
     socket.connections.push(this);
 
     this.emit("connection", {
+      input: this.mode === SocketMode.Input ? this : socket,
+      output: this.mode === SocketMode.Input ? socket : this,
+    });
+    socket.emit("connection", {
       input: this.mode === SocketMode.Input ? this : socket,
       output: this.mode === SocketMode.Input ? socket : this,
     });
