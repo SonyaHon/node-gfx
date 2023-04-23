@@ -26,19 +26,31 @@ export const NodeGFXCard: React.FC<INodeGFXCardProps> = observer(({ node }) => {
         <div className="flex flex-col">
           {node.inputSockets.map((socket) => {
             return (
-              <SocketComponent key={socket.id} socket={socket} node={node} />
+              <SocketComponent
+                disabled={node.collapsed}
+                key={socket.id}
+                socket={socket}
+                node={node}
+              />
             );
           })}
         </div>
         <div className="flex flex-col">
           {node.outputSockets.map((socket) => {
             return (
-              <SocketComponent key={socket.id} socket={socket} node={node} />
+              <SocketComponent
+                disabled={node.collapsed}
+                key={socket.id}
+                socket={socket}
+                node={node}
+              />
             );
           })}
         </div>
       </div>
-      {node.customUI && <div className="mt-2">{node.customUI()}</div>}
+      {node.customUI && !node.collapsed && (
+        <div className="mt-2">{node.customUI()}</div>
+      )}
     </Fieldset>
   );
 });

@@ -6,7 +6,8 @@ import { NodeGFX } from "../../node";
 export const SocketComponent: React.FC<{
   node: NodeGFX;
   socket: NodeGFXSocket;
-}> = observer(({ node, socket }) => {
+  disabled?: boolean;
+}> = observer(({ node, socket, disabled }) => {
   const ref = useRef(null);
   useEffect(() => {
     if (ref.current) {
@@ -43,10 +44,11 @@ export const SocketComponent: React.FC<{
           />
         )}
       </div>
-
-      <div className={socket.mode === SocketMode.Input ? "pl-2" : "pr-2"}>
-        {socket.name}
-      </div>
+      {!disabled && (
+        <div className={socket.mode === SocketMode.Input ? "pl-2" : "pr-2"}>
+          {socket.name}
+        </div>
+      )}
     </div>
   );
 });

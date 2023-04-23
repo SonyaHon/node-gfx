@@ -13,6 +13,13 @@ export const NodeGFXTitle: React.FC<INodeGFXTitleProps> = observer(
     const menu = useRef<Menu>(null);
     const items = [
       {
+        label: node.collapsed ? "Expand" : "Collapse",
+        icon: "pi " + node.collapsed ? "pi-chevron-up" : "pi-chevron-down",
+        command: () => {
+          node.toggleCollapsed();
+        },
+      },
+      {
         label: "Delete",
         icon: "pi pi-trash",
         command: () => {

@@ -20,6 +20,7 @@ export class NodeGFX extends EventEmitter {
   @observable id: string;
   @observable title: string;
   @observable evaluated = false;
+  @observable collapsed = false;
 
   @observable.deep pivotX = 0;
   @observable.deep pivotY = 0;
@@ -47,6 +48,11 @@ export class NodeGFX extends EventEmitter {
   @action
   setTitle(title: string) {
     this.title = title;
+  }
+
+  @action
+  toggleCollapsed() {
+    this.collapsed = !this.collapsed;
   }
 
   @computed
