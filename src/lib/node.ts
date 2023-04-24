@@ -13,7 +13,7 @@ import type { NodeGFXSocket } from "./socket";
 // eslint-disable-next-line no-duplicate-imports
 import { SocketMode } from "./socket";
 import { NodeGFXException } from "./error";
-import { DivWithMetadata, IExecutable } from "./types";
+import { DivWithMetadata, IExecutable, ISerializedNode } from "./types";
 import { DataContainer } from "./container";
 
 export class NodeGFX extends EventEmitter {
@@ -196,7 +196,11 @@ export class NodeGFX extends EventEmitter {
     return target.find((s) => s.canConnectTo(socket));
   }
 
-  serialize(data: Record<string, any> = {}): Record<string, any> {
+  nodeSerialize(): ISerializedNode<unknown, Record<string, unknown>> {
+    let data = {};
+    if ("serialize" in this) {
+      data = (this as { serialize: () => Record<string, unknown> }).serialize();
+    }
     return {
       ctor: DataContainer.serializeCtor(this),
       x: this.pivotX,
@@ -206,19 +210,42 @@ export class NodeGFX extends EventEmitter {
         output: this.outputSockets.map((socket) => socket.serialize()),
       },
       ...data,
-    } as Record<string, any>;
+    };
   }
 
-  static deserialize(data: any) {
+  static nodeDeserialize(data: any) {
     const ctor = DataContainer.deserializeCtor(data.ctor);
     if (!ctor) {
       return;
     }
 
     const node = new ctor();
-    runInAction(() => {
-      node.setPivot({ x: data.x, y: data.y });
-    });
+    if ("deserialize" in node) {
+      (
+        node as {
+          deserialize: (data: Record<string, unknown>) => void;
+        }
+      ).deserialize(data);
+    }
+
+    node.setPivot({ x: data.x, y: data.y });
+    for (const { id, name } of data.sockets.input) {
+      const socket = node.inputSockets.find((socket) => socket.name === name);
+      if (socket) {
+        runInAction(() => {
+          socket.id = id;
+        });
+      }
+    }
+    for (const { id, name } of data.sockets.output) {
+      const socket = node.outputSockets.find((socket) => socket.name === name);
+      if (socket) {
+        runInAction(() => {
+          socket.id = id;
+        });
+      }
+    }
+
     return node;
   }
 

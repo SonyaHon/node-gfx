@@ -1,6 +1,6 @@
 import { node } from "../../decorators";
 import { NodeGFX } from "../../node";
-import { IExecutable } from "../../types";
+import { IExecutable, ISerializable } from "../../types";
 import { action, makeObservable, observable } from "mobx";
 import { NodeGFXSocket } from "../../socket";
 import { InputText } from "primereact/inputtext";
@@ -9,7 +9,17 @@ import { Checkbox } from "primereact/checkbox";
 import "./index.css";
 
 @node("random", { title: "Random number", category: "Primitive" })
-export class RandomNumberNode extends NodeGFX implements IExecutable {
+export class RandomNumberNode
+  extends NodeGFX
+  implements
+    IExecutable,
+    ISerializable<{
+      value: number;
+      enabled: boolean;
+      from: number;
+      to: number;
+    }>
+{
   @observable value: number;
   @observable randomEnabled = true;
   @observable rangeFrom = 0;
@@ -67,6 +77,28 @@ export class RandomNumberNode extends NodeGFX implements IExecutable {
     });
 
     makeObservable(this);
+  }
+
+  serialize(): { value: number; enabled: boolean; from: number; to: number } {
+    return {
+      value: this.value,
+      enabled: this.randomEnabled,
+      from: this.rangeFrom,
+      to: this.rangeTo,
+    };
+  }
+
+  @action
+  deserialize(data: {
+    value: number;
+    enabled: boolean;
+    from: number;
+    to: number;
+  }): void {
+    this.setValue(data.value);
+    this.setRandomEnabled(data.enabled);
+    this.setRangeFrom(data.from);
+    this.setRangeTo(data.to);
   }
 
   @action

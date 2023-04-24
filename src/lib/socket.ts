@@ -199,6 +199,7 @@ export class NodeGFXSocket extends EventEmitter {
   serialize() {
     return {
       id: this.id,
+      name: this.name,
       connections: this.connections.map((socket) => socket.id),
     };
   }

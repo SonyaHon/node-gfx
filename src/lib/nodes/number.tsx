@@ -3,9 +3,13 @@ import { NodeGFX } from "../node";
 import { action, makeObservable, observable } from "mobx";
 import { NodeGFXSocket } from "../socket";
 import { InputText } from "primereact/inputtext";
+import { ISerializable } from "../types";
 
 @node("number", { title: "Number", category: "Primitive" })
-export class NumberNode extends NodeGFX {
+export class NumberNode
+  extends NodeGFX
+  implements ISerializable<{ value: number }>
+{
   @observable value = "0";
   constructor() {
     super();
@@ -40,10 +44,14 @@ export class NumberNode extends NodeGFX {
     this.value = value;
   }
 
-  override serialize(data: Record<string, any> = {}) {
-    return super.serialize({
-      value: this.value,
-      ...data,
-    });
+  @action
+  deserialize(data: { value: number }): void {
+    this.setValue(`${data.value}`);
+  }
+
+  serialize(): { value: number } {
+    return {
+      value: parseFloat(this.value || "0"),
+    };
   }
 }

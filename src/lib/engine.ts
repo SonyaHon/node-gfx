@@ -19,6 +19,7 @@ import { ConnectionStatus, SocketMode } from "./socket";
 
 import "./nodes";
 import { OngoingConnection } from "./ongoing-connection";
+import { ISerializedEngine } from "./types";
 
 export interface INodeItem extends MenuItem {
   isCategory: boolean;
@@ -182,22 +183,50 @@ export class NodeGFXEngine extends EventEmitter {
     return {
       editor: getEditor().serialize(),
       engine: {
-        nodes: this.nodes.map((node) => node.serialize()),
+        nodes: this.nodes.map((node) => node.nodeSerialize()),
       },
     };
   }
 
   deserialize(state: string) {
-    const data = JSON.parse(state);
+    const data: ISerializedEngine = JSON.parse(state);
     getEditor().deserialize(data.editor);
 
-    console.debug(data.engine.nodes);
+    runInAction(() => {
+      this.nodes = data.engine.nodes
+        .map((data) => {
+          return NodeGFX.nodeDeserialize(data);
+        })
+        .filter((node) => !!node) as NodeGFX[];
 
-    this.nodes = data.engine.nodes.map((data: any) => {
-      return NodeGFX.deserialize(data);
+      const existingSockets = this.nodes.flatMap((node) => [
+        ...node.inputSockets,
+        ...node.outputSockets,
+      ]);
+
+      const dataSockets = data.engine.nodes.flatMap(
+        (node) => node.sockets.output
+      );
+
+      for (const { id, connections } of dataSockets) {
+        if (connections.length <= 0) {
+          continue;
+        }
+        const out = existingSockets.find((socket) => socket.id === id);
+        if (!out) continue;
+        for (const inId of connections) {
+          const inSock = existingSockets.find((socket) => socket.id === inId);
+          if (!inSock) continue;
+          out.connect(inSock);
+        }
+      }
+
+      setTimeout(() => {
+        runInAction(() => {
+          this.touchNodes();
+        });
+      });
     });
-
-    runInAction(() => this.touchNodes());
   }
 
   @action

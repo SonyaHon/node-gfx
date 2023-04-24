@@ -3,10 +3,13 @@ import { NodeGFX } from "../node";
 import { NodeGFXSocket } from "../socket";
 import { action, makeObservable, observable } from "mobx";
 import { InputText } from "primereact/inputtext";
-import { IExecutable } from "../types";
+import { IExecutable, ISerializable } from "../types";
 
 @node("debug", { title: "Debug", category: "Utilities" })
-export class DebugNode extends NodeGFX implements IExecutable {
+export class DebugNode
+  extends NodeGFX
+  implements IExecutable, ISerializable<{ prefix: string }>
+{
   @observable prefix = "";
 
   constructor() {
@@ -45,10 +48,14 @@ export class DebugNode extends NodeGFX implements IExecutable {
     console.debug(`${this.prefix || "Debug"}:`, input);
   }
 
-  override serialize(data: Record<string, any> = {}) {
-    return super.serialize({
+  serialize(): { prefix: string } {
+    return {
       prefix: this.prefix,
-      ...data,
-    });
+    };
+  }
+
+  @action
+  deserialize(data: { prefix: string }): void {
+    this.setPrefix(data.prefix);
   }
 }
