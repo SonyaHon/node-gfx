@@ -1,7 +1,5 @@
 import { NodeGFX } from "./node";
 import { NodeGFXSocket } from "./socket";
-import { DataContainer } from "./container";
-import { getEditor } from "./utils";
 
 export type NodeCtor = new () => NodeGFX;
 

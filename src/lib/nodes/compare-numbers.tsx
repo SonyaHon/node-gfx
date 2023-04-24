@@ -3,7 +3,7 @@ import { NodeGFX } from "../node";
 import { IExecutable, ISerializable } from "../types";
 import { action, makeObservable, observable } from "mobx";
 import { NodeGFXSocket } from "../socket";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Dropdown } from "primereact/dropdown";
 import { NodeGFXException } from "../error";
 
