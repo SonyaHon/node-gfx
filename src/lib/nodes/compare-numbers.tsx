@@ -8,26 +8,10 @@ import { Dropdown } from "primereact/dropdown";
 import { NodeGFXException } from "../error";
 
 const ComparingMethods = [
-  {
-    label: "Greater than",
-
-    fn: (a: number, b: number) => a > b,
-  },
-  {
-    label: "Greater than or equal",
-
-    fn: (a: number, b: number) => a >= b,
-  },
-  {
-    label: "Less than",
-
-    fn: (a: number, b: number) => a < b,
-  },
-  {
-    label: "Less than or equal",
-
-    fn: (a: number, b: number) => a <= b,
-  },
+  { label: "Greater than", fn: (a: number, b: number) => a > b },
+  { label: "Greater than or equal", fn: (a: number, b: number) => a >= b },
+  { label: "Less than", fn: (a: number, b: number) => a < b },
+  { label: "Less than or equal", fn: (a: number, b: number) => a <= b },
   { label: "Equal", fn: (a: number, b: number) => a === b },
 ];
 
