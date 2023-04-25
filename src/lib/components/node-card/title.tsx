@@ -12,6 +12,7 @@ export const NodeGFXTitle: React.FC<INodeGFXTitleProps> = observer(
   ({ node }) => {
     const menu = useRef<Menu>(null);
     const items = [
+      ...node.customMenuProps,
       {
         label: node.collapsed ? "Expand" : "Collapse",
         icon: "pi " + node.collapsed ? "pi-chevron-up" : "pi-chevron-down",

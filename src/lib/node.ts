@@ -21,6 +21,11 @@ export class NodeGFX extends EventEmitter {
   @observable title: string;
   @observable evaluated = false;
   @observable collapsed = false;
+  @observable.deep customMenuProps: {
+    label: string;
+    command: () => void | Promise<void>;
+    icon?: string;
+  }[] = [];
 
   @observable.deep pivotX = 0;
   @observable.deep pivotY = 0;
@@ -53,6 +58,25 @@ export class NodeGFX extends EventEmitter {
   @action
   toggleCollapsed() {
     this.collapsed = !this.collapsed;
+  }
+
+  @action
+  addMenuOption(
+    label: string,
+    command: () => void | Promise<void>,
+    icon?: string
+  ) {
+    this.customMenuProps.push({ label, command, icon });
+  }
+
+  @action
+  removeMenuOption(label: string) {
+    if (!["Expand", "Collapse", "Delete"].includes(label)) {
+      const index = this.customMenuProps.findIndex((el) => el.label === label);
+      if (index >= 0) {
+        this.customMenuProps.splice(index, 1);
+      }
+    }
   }
 
   @computed
@@ -107,6 +131,17 @@ export class NodeGFX extends EventEmitter {
     socket.setRef(this);
     socket.on("connection", (...args) => this.emit("connection", ...args));
     target.push(socket);
+  }
+
+  @action
+  removeSocket(mode: SocketMode, name: string) {
+    const target =
+      mode === SocketMode.Input ? this.inputSockets : this.outputSockets;
+    const socket = target.findIndex((socket) => socket.name === name);
+    if (socket >= 0) {
+      target[socket].disconnect();
+      target.splice(socket, 1);
+    }
   }
 
   @action
